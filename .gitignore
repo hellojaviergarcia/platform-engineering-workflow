@@ -57,8 +57,3 @@ __pycache__/
 venv/
 env/
 .env/
-
-# Documentation
-INTERVIEW_PREP.md
-PROJECT_CHANGELOG.md
-Docs/
