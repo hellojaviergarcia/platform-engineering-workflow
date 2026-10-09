@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "wisecow.name" -}}
+{{- define "flaskapp.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "wisecow.fullname" -}}
+{{- define "flaskapp.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "wisecow.chart" -}}
+{{- define "flaskapp.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "wisecow.labels" -}}
-helm.sh/chart: {{ include "wisecow.chart" . }}
-{{ include "wisecow.selectorLabels" . }}
+{{- define "flaskapp.labels" -}}
+helm.sh/chart: {{ include "flaskapp.chart" . }}
+{{ include "flaskapp.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,8 +45,8 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "wisecow.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "wisecow.name" . }}
+{{- define "flaskapp.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "flaskapp.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app: {{ include "wisecow.name" . }}
+app: {{ include "flaskapp.name" . }}
 {{- end }}

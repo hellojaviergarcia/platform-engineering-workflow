@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "wisecow.fullname" . }}
+  name: {{ include "flaskapp.fullname" . }}
   labels:
-    {{- include "wisecow.labels" . | nindent 4 }}
+    {{- include "flaskapp.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: argoproj.io/v1alpha1
     kind: Rollout
-    name: {{ include "wisecow.fullname" . }}
+    name: {{ include "flaskapp.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

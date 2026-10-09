@@ -3,7 +3,7 @@
 # Exit on any error
 set -e
 
-echo "Starting Wisecow Cluster Bootstrap..."
+echo "Starting Flaskapp Cluster Bootstrap..."
 
 echo "Creating Monitoring Namespace..."
 kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
@@ -22,7 +22,7 @@ echo "Injecting Grafana Admin Credentials..."
 if [ -n "$GRAFANA_ADMIN_PASSWORD" ]; then
   kubectl create secret generic grafana-admin-credentials \
     -n monitoring \
-    --from-literal=admin-user=wisecow \
+    --from-literal=admin-user=flaskapp \
     --from-literal=admin-password="$GRAFANA_ADMIN_PASSWORD" \
     --dry-run=client -o yaml | kubectl apply -f -
 fi
@@ -73,15 +73,15 @@ echo "Waiting for Argo Rollouts controller..."
 kubectl wait --for=condition=ready pod --all -n argo-rollouts --timeout=600s || echo "[WARN] Argo Rollouts is still starting. It will become ready shortly."
 
 # 4. Apply our GitOps Applications
-# Note: You MUST update the repository URL in argocd/wisecow-application.yaml before running this!
-echo "Deploying Wisecow App and Prometheus Stack via ArgoCD..."
+# Note: You MUST update the repository URL in argocd/flaskapp-application.yaml before running this!
+echo "Deploying Flaskapp App and Prometheus Stack via ArgoCD..."
 kubectl apply -f argocd/prometheus-application.yaml
-kubectl apply -f argocd/wisecow-application.yaml
+kubectl apply -f argocd/flaskapp-application.yaml
 kubectl apply -f argocd/argocd-ingress.yaml
 
 echo "Bootstrap Complete!"
 echo "ArgoCD and Argo Rollouts have been installed, and your applications are deploying."
-echo "You can check deployment status with: kubectl get pods -n wisecow"
+echo "You can check deployment status with: kubectl get pods -n flaskapp"
 
 echo ""
 echo "Waiting for AWS to provision the Load Balancer (this takes ~60 seconds)..."

@@ -8,5 +8,5 @@ variable "subnet_ids" {
 
 variable "cluster_name" {
   type    = string
-  default = "wisecow-cluster"
+  default = "flaskapp-cluster"
 }

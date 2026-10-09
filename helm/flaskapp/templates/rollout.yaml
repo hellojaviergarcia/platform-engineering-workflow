@@ -1,9 +1,9 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: {{ include "wisecow.fullname" . }}
+  name: {{ include "flaskapp.fullname" . }}
   labels:
-    {{- include "wisecow.labels" . | nindent 4 }}
+    {{- include "flaskapp.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
@@ -16,11 +16,11 @@ spec:
           - templateName: crash-loop-check
   selector:
     matchLabels:
-      {{- include "wisecow.selectorLabels" . | nindent 6 }}
+      {{- include "flaskapp.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "wisecow.selectorLabels" . | nindent 8 }}
+        {{- include "flaskapp.selectorLabels" . | nindent 8 }}
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "{{ .Values.service.targetPort }}"

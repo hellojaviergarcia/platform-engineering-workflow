@@ -45,7 +45,7 @@ jobs:
       run: terraform apply -auto-approve tfplan
       
     - name: Update kubeconfig
-      run: aws eks update-kubeconfig --region us-east-1 --name wisecow-cluster
+      run: aws eks update-kubeconfig --region us-east-1 --name flaskapp-cluster
       
     - name: Bootstrap Cluster (ArgoCD & GitOps)
       env:

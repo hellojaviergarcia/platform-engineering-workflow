@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED=1
 ENV PORT=4499
 
 # Create a non-root user
-RUN adduser --disabled-password --gecos "" wisecow
+RUN adduser --disabled-password --gecos "" flaskapp
 
 # Set work directory
 WORKDIR /app
@@ -22,10 +22,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app.py .
 
 # Change ownership
-RUN chown -R wisecow:wisecow /app
+RUN chown -R flaskapp:flaskapp /app
 
 # Switch to non-root user
-USER wisecow
+USER flaskapp
 
 # Expose port
 EXPOSE 4499

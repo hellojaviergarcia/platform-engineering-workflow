@@ -24,7 +24,7 @@ helm uninstall ingress-nginx -n ingress-nginx --ignore-not-found
 
 # Remove namespaces
 echo -e "${YELLOW}Removing namespaces...${NC}"
-kubectl delete namespace wisecow --ignore-not-found=true
+kubectl delete namespace flaskapp --ignore-not-found=true
 kubectl delete namespace cert-manager --ignore-not-found=true
 kubectl delete namespace ingress-nginx --ignore-not-found=true
 

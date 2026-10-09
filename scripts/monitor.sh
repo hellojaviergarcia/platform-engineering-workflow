@@ -7,9 +7,9 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-NAMESPACE="wisecow"
+NAMESPACE="flaskapp"
 
-echo -e "${GREEN}=== Wisecow Application Monitoring ===${NC}"
+echo -e "${GREEN}=== Flaskapp Application Monitoring ===${NC}"
 
 # Check cluster connection
 echo -e "${YELLOW}Checking cluster connectivity...${NC}"

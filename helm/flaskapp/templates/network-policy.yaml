@@ -2,13 +2,13 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "wisecow.fullname" . }}
+  name: {{ include "flaskapp.fullname" . }}
   labels:
-    {{- include "wisecow.labels" . | nindent 4 }}
+    {{- include "flaskapp.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      {{- include "wisecow.selectorLabels" . | nindent 6 }}
+      {{- include "flaskapp.selectorLabels" . | nindent 6 }}
   policyTypes:
     - Ingress
     - Egress

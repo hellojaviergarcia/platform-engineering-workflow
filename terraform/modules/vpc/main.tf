@@ -10,8 +10,8 @@ resource "aws_vpc" "this" {
   enable_dns_support   = true
 
   tags = {
-    Name                                    = "wisecow-vpc"
-    "kubernetes.io/cluster/wisecow-cluster" = "shared"
+    Name                                    = "flaskapp-vpc"
+    "kubernetes.io/cluster/flaskapp-cluster" = "shared"
   }
 }
 
@@ -19,7 +19,7 @@ resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
 
   tags = {
-    Name = "wisecow-igw"
+    Name = "flaskapp-igw"
   }
 }
 
@@ -33,9 +33,9 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name                                    = "wisecow-public-subnet-${count.index + 1}"
+    Name                                    = "flaskapp-public-subnet-${count.index + 1}"
     "kubernetes.io/role/elb"                = "1"
-    "kubernetes.io/cluster/wisecow-cluster" = "shared"
+    "kubernetes.io/cluster/flaskapp-cluster" = "shared"
   }
 }
 
@@ -48,7 +48,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "wisecow-public-rt"
+    Name = "flaskapp-public-rt"
   }
 }
 

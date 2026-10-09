@@ -10,10 +10,10 @@ NC='\033[0m' # No Color
 
 # Configuration
 AWS_REGION="us-east-1"
-CLUSTER_NAME="wisecow-cluster"
-NAMESPACE="wisecow"
+CLUSTER_NAME="flaskapp-cluster"
+NAMESPACE="flaskapp"
 
-echo -e "${GREEN}Starting Wisecow deployment...${NC}"
+echo -e "${GREEN}Starting Flaskapp deployment...${NC}"
 
 # Function to check if command exists
 command_exists() {
@@ -54,7 +54,7 @@ kubectl wait --namespace ingress-nginx \
   --timeout=300s
 
 # Deploy the application
-echo -e "${YELLOW}Deploying Wisecow application...${NC}"
+echo -e "${YELLOW}Deploying Flaskapp application...${NC}"
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
 kubectl apply -f k8s/cluster-issuer.yaml
@@ -62,7 +62,7 @@ kubectl apply -f k8s/ingress.yaml
 
 # Wait for deployment to be ready
 echo -e "${YELLOW}Waiting for deployment to be ready...${NC}"
-kubectl wait --for=condition=available --timeout=300s deployment/wisecow-deployment -n "$NAMESPACE"
+kubectl wait --for=condition=available --timeout=300s deployment/flaskapp-deployment -n "$NAMESPACE"
 
 # Get the LoadBalancer URL
 echo -e "${YELLOW}Getting LoadBalancer URL...${NC}"
@@ -71,7 +71,7 @@ LB_URL=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath='
 echo -e "${GREEN}Deployment completed successfully!${NC}"
 echo -e "${GREEN}LoadBalancer URL: http://$LB_URL${NC}"
 echo -e "${GREEN}Configure your domain to point to this LoadBalancer${NC}"
-echo -e "${GREEN}Application will be available at: https://wisecow.yourdomain.com${NC}"
+echo -e "${GREEN}Application will be available at: https://flaskapp.yourdomain.com${NC}"
 
 # Show pod status
 echo -e "${YELLOW}Current pod status:${NC}"
