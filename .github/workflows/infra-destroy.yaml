@@ -23,7 +23,7 @@ jobs:
         aws-region: us-east-1
         
     - name: Update kubeconfig
-      run: aws eks update-kubeconfig --region us-east-1 --name flaskapp-cluster
+      run: aws eks update-kubeconfig --region us-east-1 --name wisecow-cluster
       continue-on-error: true # Might fail if cluster doesn't exist yet, which is fine
       
     - name: Clean up Kubernetes LoadBalancers

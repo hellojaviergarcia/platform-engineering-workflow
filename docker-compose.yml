@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  flaskapp:
+  wisecow:
     build: .
     ports:
       - "4499:4499"

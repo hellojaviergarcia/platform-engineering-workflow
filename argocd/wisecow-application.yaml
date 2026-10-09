@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: flaskapp
+  name: wisecow
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/hellojaviergarcia/platform-engineering-workflow.git'
+    repoURL: 'https://github.com/anuragstark/wisecow-Python.git'
     targetRevision: HEAD
-    path: helm/flaskapp
+    path: helm/wisecow
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: flaskapp
+    namespace: wisecow
   syncPolicy:
     automated:
       prune: true

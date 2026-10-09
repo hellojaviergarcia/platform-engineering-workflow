@@ -2,9 +2,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "flaskapp.fullname" . }}
+  name: {{ include "wisecow.fullname" . }}
   labels:
-    {{- include "flaskapp.labels" . | nindent 4 }}
+    {{- include "wisecow.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -31,7 +31,7 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ include "flaskapp.fullname" $ }}
+                name: {{ include "wisecow.fullname" $ }}
                 port:
                   number: {{ $.Values.service.port }}
           {{- end }}

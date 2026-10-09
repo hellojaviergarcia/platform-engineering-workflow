@@ -1,66 +1,124 @@
-# Flaskapp Platform Engineering
+# Wisecow GitOps Platform
 
-A simple and automated project that deploys a Python Flask "Hello World!" application to an **AWS EKS** (Kubernetes) cluster using **GitOps**.
+[![CI/CD Pipeline](https://github.com/anuragstark/wisecow-Python/actions/workflows/app-ci.yaml/badge.svg)](https://github.com/anuragstark/wisecow-Python/actions)
+[![Infrastructure](https://github.com/anuragstark/wisecow-Python/actions/workflows/infra-deploy.yaml/badge.svg)](https://github.com/anuragstark/wisecow-Python/actions)
 
-Everything is automated, from creating the infrastructure to building and deploying the app.
+An enterprise-grade, cloud-native DevOps portfolio project demonstrating a fully automated **Test -> Build -> Scan -> Deploy** lifecycle using **GitOps** principles.
 
----
+## Architecture Overview
 
-## 🛠️ Technologies Used
+This project deploys "Wisecow" — a containerized **Python Flask Microservice** that serves random ASCII cow fortunes — onto an **AWS Elastic Kubernetes Service (EKS)** cluster. The entire lifecycle—from infrastructure provisioning to application canary deployments—is fully automated via **GitHub Actions** and **ArgoCD**, requiring zero local execution.
 
-- **App**: Python, Flask, Docker
-- **Infrastructure**: Terraform (IaC), AWS EKS
-- **CI/CD**: GitHub Actions (Build, Test)
-- **Deployment**: ArgoCD (GitOps) & Argo Rollouts (Canary)
-- **Security**: Trivy (Docker scan) & Checkov (Terraform/Helm scan)
-- **Observability**: Prometheus & Grafana
-
----
-
-## 🚀 How It Works
-
-1. **Infrastructure**: Terraform creates a VPC and an EKS cluster in AWS via a GitHub Actions workflow.
-2. **CI Pipeline**: Whenever you push code, GitHub Actions runs tests (`pytest`), scans the Docker image for vulnerabilities, and pushes it to GitHub Container Registry (GHCR).
-3. **CD Pipeline (GitOps)**: ArgoCD watches this repository and automatically deploys any new versions of the application to the Kubernetes cluster.
+### Tech Stack
+- **Application**: Python 3.11, Flask, Gunicorn (with Prometheus metrics)
+- **Infrastructure as Code**: Terraform (Modularized VPC & EKS with S3 Remote Backend)
+- **Containerization**: Docker, GitHub Container Registry (GHCR)
+- **Orchestration**: Kubernetes (AWS EKS)
+- **CI/CD Pipeline**: GitHub Actions
+- **Continuous Deployment (GitOps)**: ArgoCD
+- **Deployment Strategy**: Argo Rollouts (Canary Deployments)
+- **DevSecOps**: Checkov (IaC Security), Trivy (Image Vulnerability Scanning)
 
 ---
 
-## 📋 Prerequisites
+## Key Features
 
-To deploy this yourself, you need:
-1. An **AWS Account**.
-2. The following **GitHub Secrets** configured in your repository:
-   - `AWS_ACCESS_KEY_ID`
-   - `AWS_SECRET_ACCESS_KEY`
-   - `SMTP_APP_PASSWORD` (For Alertmanager email alerts)
-   - `GRAFANA_ADMIN_PASSWORD` (For Grafana dashboard access)
+### 1. DevSecOps CI/CD Pipeline (`app-ci.yaml`)
+On every push to the repository:
+- **Unit Testing**: Runs `pytest` against the Flask `/health` and `/metrics` endpoints.
+- **Trivy Image Scan**: Builds the Docker image locally and runs Aqua Security Trivy to scan the OS and Python libraries for `CRITICAL` or `HIGH` vulnerabilities. Fails the build if any are found.
+- **Publish**: Pushes the secure image to GHCR.
+
+### 2. Infrastructure Automation (`infra-deploy.yaml`)
+- **Modular Terraform**: Clean separation of `vpc` and `eks` modules.
+- **Checkov Scanning**: Scans Terraform and Helm code for security misconfigurations.
+- **Automated Provisioning**: GitHub Actions automatically runs `terraform apply` when the `terraform/` directory is modified.
+- **Cluster Bootstrapping**: A post-apply script automatically installs ArgoCD and the Argo Rollouts controller onto the newly minted cluster.
+
+### 3. GitOps & Canary Deployments (`argocd/`)
+- **Zero-Touch Deployments**: ArgoCD monitors this repository. When a new image tag is detected, it automatically syncs the cluster state.
+- **Argo Rollouts**: Replaces standard Kubernetes Deployments. Configured to route **20% of live traffic** to the new version (Canary) and pause for manual verification before 100% promotion, ensuring zero-downtime and safe releases.
+
+### 4. Automated SSL & Observability
+- **Cert-Manager & Let's Encrypt**: Automatically provisions and rotates valid SSL certificates for all domains (App, ArgoCD, Grafana) via the NGINX Ingress Controller.
+- **Kube-Prometheus-Stack**: Deep cluster metrics with Grafana dashboards.
+- **Alertmanager**: Configured to send automated email notifications if pod CPU/Memory usage spikes.
 
 ---
 
-## ▶️ Getting Started
+## Getting Started
 
-You don't need to run anything locally. Everything is done through GitHub Actions:
+### Prerequisites
+- AWS Account
+- GitHub Repository Secrets configured:
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_SECRET_ACCESS_KEY`
+  - `SMTP_APP_PASSWORD` (For Alertmanager email notifications)
+  - `GRAFANA_ADMIN_PASSWORD` (For secure Grafana login)
 
-1. **Deploy Infrastructure**: Go to the **Actions** tab on GitHub, select **Infrastructure Deploy**, and run it. This creates the AWS resources and installs ArgoCD.
-2. **Deploy the App**: ArgoCD will automatically detect the configurations in the `argocd/` folder and deploy the app.
-3. **Make Changes**: Modify `app.py`, commit, and push. The CI/CD pipeline will automatically test, build, and deploy your changes.
-4. **Clean up**: When you are done, run the **Infrastructure Destroy** action to delete all AWS resources and avoid unexpected charges.
+### How to Deploy
+You do **not** need to run any local scripts. 
+
+1. **Deploy Infrastructure**: Navigate to the **Actions** tab in GitHub, select the `Infrastructure Deploy` workflow, and click "Run workflow". This will provision the VPC, EKS cluster, and install ArgoCD.
+2. **Deploy Application**: ArgoCD will automatically detect the `argocd/wisecow-application.yaml` manifest and deploy the Helm chart.
+3. **Trigger App Update**: Make a change to `app.py`, commit, and push. Watch the `app-ci.yaml` action test, scan, and push your image.
+4. **Tear Down**: When finished, run the `Infrastructure Destroy` GitHub Action to safely clean up AWS resources.
+
+### Accessing Dashboards & Application
+
+Once the cluster is bootstrapped, an AWS Load Balancer is automatically provisioned via the NGINX Ingress Controller. To get your Load Balancer URL, check the end of the `bootstrap.sh` script output or run:
+```bash
+kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+```
+
+Point the following three CNAME records in your DNS provider (e.g., GoDaddy) to the AWS Load Balancer URL:
+
+**1. Wisecow Application**
+- **URL**: `https://www.checkmypro.online` (or `https://www.yourdomain.com`)
+
+**2. ArgoCD Dashboard (GitOps)**
+- **URL**: `https://argocd.checkmypro.online` (or `https://argocd.yourdomain.com`)
+- **Username**: `admin`
+- **Password**: Auto-generated on boot. Retrieve it securely via:
+  ```bash
+  kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+  ```
+
+**3. Grafana Dashboard (Prometheus Metrics)**
+- **URL**: `https://grafana.checkmypro.online` (or `https://grafana.yourdomain.com`)
+- **Username**: `wisecow`
+- **Password**: *The password you set in the `GRAFANA_ADMIN_PASSWORD` GitHub Secret.*
+*(Note: Use Dashboard ID `9614` to import the official NGINX Ingress traffic metrics).*
 
 ---
 
-## 📁 Repository Structure
+## 📸 Project Gallery
+
+| Wisecow Application (with SSL) | ArgoCD GitOps Dashboard |
+|:---:|:---:|
+| <img src="Images/app.png" width="500"/> | <img src="Images/argocdwisecow1.png" width="500"/> |
+| **Grafana Observability Metrics** | **GitHub Actions CI/CD Pipeline** |
+| <img src="Images/grafana1.png" width="500"/> | <img src="Images/cicdbuild.png" width="500"/> |
+
+---
+
+## Repository Structure
 
 ```text
-├── .github/workflows/       # GitHub Actions pipelines (CI/CD, Infra Deploy/Destroy)
-├── argocd/                  # ArgoCD deployment configurations
-├── helm/flaskapp/           # Helm chart for the Kubernetes app
-├── scripts/                 # Helpful bash scripts (bootstrap, deploy, monitor, etc.)
-├── terraform/               # Terraform code to create AWS VPC & EKS
-├── app.py                   # Python Flask Application ("Hello World!")
-├── docker-compose.yml       # Local development setup
-├── Dockerfile               # Docker configuration
-├── manage.py                # Local management script
-├── requirements.txt         # Python dependencies
-├── test_app.py              # Unit tests
-└── .trivyignore             # Ignored vulnerabilities for Trivy
+├── .github/workflows/       # GitHub Actions (app-ci, infra-deploy, infra-destroy)
+├── argocd/                  # GitOps Application manifests (Wisecow & Prometheus)
+├── helm/wisecow/            # Helm chart containing the Argo Rollout template
+├── scripts/                 # Utility scripts (bootstrap.sh)
+├── terraform/               # Modularized IaC (vpc and eks modules)
+├── app.py                   # Python Flask Application
+├── test_app.py              # Pytest unit tests
+└── Dockerfile               # Production-ready multi-stage Dockerfile
 ```
+
+---
+
+## Let's Connect!
+**Anurag Stark**
+
+Feel free to reach out or connect with me on LinkedIn:
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)](https://www.linkedin.com/in/anuragstark/)

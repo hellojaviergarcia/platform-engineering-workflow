@@ -1,6 +1,6 @@
 # Security Group for EKS
 resource "aws_security_group" "eks_sg" {
-  name        = "flaskapp-eks-sg"
+  name        = "wisecow-eks-sg"
   description = "Security group for EKS cluster"
   vpc_id      = var.vpc_id
 
@@ -28,7 +28,7 @@ resource "aws_security_group" "eks_sg" {
   }
 
   tags = {
-    Name = "flaskapp-eks-sg"
+    Name = "wisecow-eks-sg"
   }
 }
 
@@ -114,7 +114,7 @@ resource "aws_iam_role_policy_attachment" "container_registry_policy" {
 # EKS Node Group
 resource "aws_eks_node_group" "this" {
   cluster_name           = aws_eks_cluster.this.name
-  node_group_name_prefix = "flaskapp-nodes-"
+  node_group_name_prefix = "wisecow-nodes-"
   node_role_arn          = aws_iam_role.node_role.arn
   subnet_ids      = var.subnet_ids
 

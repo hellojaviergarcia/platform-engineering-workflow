@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Health check script for Flaskapp application
+# Health check script for Wisecow application
 # This script performs comprehensive health checks
 
 set -e
@@ -11,11 +11,11 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-NAMESPACE="flaskapp"
-DEPLOYMENT="flaskapp-deployment"
-SERVICE="flaskapp-service"
+NAMESPACE="wisecow"
+DEPLOYMENT="wisecow-deployment"
+SERVICE="wisecow-service"
 
-echo -e "${GREEN}=== Flaskapp Health Check ===${NC}"
+echo -e "${GREEN}=== Wisecow Health Check ===${NC}"
 
 # Function to check if a command succeeded
 check_status() {
@@ -55,15 +55,15 @@ fi
 
 # Check pod status
 echo -e "${YELLOW}Checking pods...${NC}"
-RUNNING_PODS=$(kubectl get pods -n "$NAMESPACE" -l app=flaskapp --field-selector=status.phase=Running -o name | wc -l)
-TOTAL_PODS=$(kubectl get pods -n "$NAMESPACE" -l app=flaskapp -o name | wc -l)
+RUNNING_PODS=$(kubectl get pods -n "$NAMESPACE" -l app=wisecow --field-selector=status.phase=Running -o name | wc -l)
+TOTAL_PODS=$(kubectl get pods -n "$NAMESPACE" -l app=wisecow -o name | wc -l)
 
 if [ "$RUNNING_PODS" -eq "$TOTAL_PODS" ] && [ "$TOTAL_PODS" -gt 0 ]; then
     echo -e "${GREEN}[OK] All pods are running ($RUNNING_PODS/$TOTAL_PODS)${NC}"
 else
     echo -e "${RED}[FAIL] Some pods are not running ($RUNNING_PODS/$TOTAL_PODS)${NC}"
     echo -e "${YELLOW}Pod details:${NC}"
-    kubectl get pods -n "$NAMESPACE" -l app=flaskapp
+    kubectl get pods -n "$NAMESPACE" -l app=wisecow
 fi
 
 # Check service

@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
-    bucket         = "flaskapp-backend-7165"
-    key            = "flaskapp/terraform.tfstate"
+    bucket         = "wisecow-backend-7165"
+    key            = "wisecow/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "flaskapp"
+    dynamodb_table = "wisecow"
     encrypt        = true
   }
 }

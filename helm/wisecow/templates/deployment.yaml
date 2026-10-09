@@ -1,26 +1,18 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Rollout
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: {{ include "flaskapp.fullname" . }}
+  name: {{ include "wisecow.fullname" . }}
   labels:
-    {{- include "flaskapp.labels" . | nindent 4 }}
+    {{- include "wisecow.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
-  strategy:
-    canary:
-      steps:
-      - setWeight: 20
-      - pause: {duration: 2m}
-      - analysis:
-          templates:
-          - templateName: crash-loop-check
   selector:
     matchLabels:
-      {{- include "flaskapp.selectorLabels" . | nindent 6 }}
+      {{- include "wisecow.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "flaskapp.selectorLabels" . | nindent 8 }}
+        {{- include "wisecow.selectorLabels" . | nindent 8 }}
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "{{ .Values.service.targetPort }}"
