@@ -1,13 +1,10 @@
-# Wisecow GitOps Platform
-
-[![CI/CD Pipeline](https://github.com/anuragstark/wisecow-Python/actions/workflows/app-ci.yaml/badge.svg)](https://github.com/anuragstark/wisecow-Python/actions)
-[![Infrastructure](https://github.com/anuragstark/wisecow-Python/actions/workflows/infra-deploy.yaml/badge.svg)](https://github.com/anuragstark/wisecow-Python/actions)
+# Flaskapp GitOps Platform
 
 An enterprise-grade, cloud-native DevOps portfolio project demonstrating a fully automated **Test -> Build -> Scan -> Deploy** lifecycle using **GitOps** principles.
 
 ## Architecture Overview
 
-This project deploys "Wisecow" — a containerized **Python Flask Microservice** that serves random ASCII cow fortunes — onto an **AWS Elastic Kubernetes Service (EKS)** cluster. The entire lifecycle—from infrastructure provisioning to application canary deployments—is fully automated via **GitHub Actions** and **ArgoCD**, requiring zero local execution.
+This project deploys "Flaskapp" — a containerized **Python Flask Microservice** that serves random ASCII cow fortunes — onto an **AWS Elastic Kubernetes Service (EKS)** cluster. The entire lifecycle—from infrastructure provisioning to application canary deployments—is fully automated via **GitHub Actions** and **ArgoCD**, requiring zero local execution.
 
 ### Tech Stack
 - **Application**: Python 3.11, Flask, Gunicorn (with Prometheus metrics)
@@ -60,7 +57,7 @@ On every push to the repository:
 You do **not** need to run any local scripts. 
 
 1. **Deploy Infrastructure**: Navigate to the **Actions** tab in GitHub, select the `Infrastructure Deploy` workflow, and click "Run workflow". This will provision the VPC, EKS cluster, and install ArgoCD.
-2. **Deploy Application**: ArgoCD will automatically detect the `argocd/wisecow-application.yaml` manifest and deploy the Helm chart.
+2. **Deploy Application**: ArgoCD will automatically detect the `argocd/flaskapp-application.yaml` manifest and deploy the Helm chart.
 3. **Trigger App Update**: Make a change to `app.py`, commit, and push. Watch the `app-ci.yaml` action test, scan, and push your image.
 4. **Tear Down**: When finished, run the `Infrastructure Destroy` GitHub Action to safely clean up AWS resources.
 
@@ -73,7 +70,7 @@ kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath='{.status.
 
 Point the following three CNAME records in your DNS provider (e.g., GoDaddy) to the AWS Load Balancer URL:
 
-**1. Wisecow Application**
+**1. Flaskapp Application**
 - **URL**: `https://www.checkmypro.online` (or `https://www.yourdomain.com`)
 
 **2. ArgoCD Dashboard (GitOps)**
@@ -86,7 +83,7 @@ Point the following three CNAME records in your DNS provider (e.g., GoDaddy) to 
 
 **3. Grafana Dashboard (Prometheus Metrics)**
 - **URL**: `https://grafana.checkmypro.online` (or `https://grafana.yourdomain.com`)
-- **Username**: `wisecow`
+- **Username**: `flaskapp`
 - **Password**: *The password you set in the `GRAFANA_ADMIN_PASSWORD` GitHub Secret.*
 *(Note: Use Dashboard ID `9614` to import the official NGINX Ingress traffic metrics).*
 
@@ -94,9 +91,9 @@ Point the following three CNAME records in your DNS provider (e.g., GoDaddy) to 
 
 ## 📸 Project Gallery
 
-| Wisecow Application (with SSL) | ArgoCD GitOps Dashboard |
+| Flaskapp Application (with SSL) | ArgoCD GitOps Dashboard |
 |:---:|:---:|
-| <img src="Images/app.png" width="500"/> | <img src="Images/argocdwisecow1.png" width="500"/> |
+| <img src="Images/app.png" width="500"/> | <img src="Images/argocdflaskapp1.png" width="500"/> |
 | **Grafana Observability Metrics** | **GitHub Actions CI/CD Pipeline** |
 | <img src="Images/grafana1.png" width="500"/> | <img src="Images/cicdbuild.png" width="500"/> |
 
@@ -106,19 +103,11 @@ Point the following three CNAME records in your DNS provider (e.g., GoDaddy) to 
 
 ```text
 ├── .github/workflows/       # GitHub Actions (app-ci, infra-deploy, infra-destroy)
-├── argocd/                  # GitOps Application manifests (Wisecow & Prometheus)
-├── helm/wisecow/            # Helm chart containing the Argo Rollout template
+├── argocd/                  # GitOps Application manifests (Flaskapp & Prometheus)
+├── helm/flaskapp/            # Helm chart containing the Argo Rollout template
 ├── scripts/                 # Utility scripts (bootstrap.sh)
 ├── terraform/               # Modularized IaC (vpc and eks modules)
 ├── app.py                   # Python Flask Application
 ├── test_app.py              # Pytest unit tests
 └── Dockerfile               # Production-ready multi-stage Dockerfile
 ```
-
----
-
-## Let's Connect!
-**Anurag Stark**
-
-Feel free to reach out or connect with me on LinkedIn:
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)](https://www.linkedin.com/in/anuragstark/)
