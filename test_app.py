@@ -12,3 +12,9 @@ def test_root_endpoint(client):
     rv = client.get('/')
     assert rv.status_code == 200
     assert b"Hello World!" in rv.data
+
+def test_health_endpoint(client):
+    """Test the health endpoint returns OK"""
+    rv = client.get('/health')
+    assert rv.status_code == 200
+    assert b"OK" in rv.data

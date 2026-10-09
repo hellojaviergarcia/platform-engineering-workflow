@@ -45,8 +45,8 @@ resources:
     cpu: "500m"
 
 securityContext:
-  runAsNonRoot: false
-  runAsUser: 0
+  runAsNonRoot: true
+  runAsUser: 2000
   capabilities:
     drop: ["ALL"]
     
