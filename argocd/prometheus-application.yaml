@@ -16,9 +16,9 @@ spec:
           config:
             global:
               smtp_smarthost: 'smtp.gmail.com:587'
-              smtp_from: 'alertmanager@checkmypro.online'
-              smtp_auth_username: 'anuragchauhan536@gmail.com'
-              smtp_auth_identity: 'anuragchauhan536@gmail.com'
+              smtp_from: '---@---.---'
+              smtp_auth_username: 'hellojaviergarcia@gmail.com'
+              smtp_auth_identity: 'hellojaviergarcia@gmail.com'
               smtp_auth_password_file: /etc/alertmanager/secrets/alertmanager-smtp/password
             route:
               group_by: ['alertname']
@@ -33,7 +33,7 @@ spec:
             receivers:
             - name: 'email-notifications'
               email_configs:
-              - to: 'anuragchauhan536@gmail.com'
+              - to: 'hellojaviergarcia@gmail.com'
                 send_resolved: true
           alertmanagerSpec:
             secrets:

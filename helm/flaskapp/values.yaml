@@ -23,19 +23,18 @@ ingress:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   hosts:
-    - host: checkmypro.online
+    - host: ---.---
       paths:
         - path: /
           pathType: Prefix
-    - host: www.checkmypro.online
+    - host: ---.---
       paths:
         - path: /
           pathType: Prefix
   tls:
     - secretName: flaskapp-tls
       hosts:
-        - checkmypro.online
-        - www.checkmypro.online
+        - ---.---
 
 resources:
   requests:
