@@ -3,78 +3,78 @@ import subprocess
 import argparse
 import sys
 
-# Variables por defecto (equivalentes a las del Makefile)
-CLUSTER_NAME = os.getenv("CLUSTER_NAME", "wisecow-cluster")
+# Default variables (equivalent to Makefile)
+CLUSTER_NAME = os.getenv("CLUSTER_NAME", "flaskapp-cluster")
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
-NAMESPACE = os.getenv("NAMESPACE", "wisecow")
+NAMESPACE = os.getenv("NAMESPACE", "flaskapp")
 IMAGE_TAG = os.getenv("IMAGE_TAG", "latest")
-REGISTRY = os.getenv("REGISTRY", "ghcr.io/anuragstark/wisecow")
+REGISTRY = os.getenv("REGISTRY", "ghcr.io/hellojaviergarcia/flaskapp")
 
-# Colores para la terminal
+# Terminal colors
 YELLOW = '\033[1;33m'
 GREEN = '\033[0;32m'
 RED = '\033[0;31m'
 NC = '\033[0m' # No Color
 
 def run_command(command, cwd=None, exit_on_error=True):
-    """Ejecuta un comando en la terminal y maneja errores."""
+    """Executes a command in the terminal and handles errors."""
     try:
         subprocess.run(command, shell=True, check=True, cwd=cwd)
     except subprocess.CalledProcessError as e:
-        print(f"{RED}Error ejecutando: {command}{NC}")
+        print(f"{RED}Error executing: {command}{NC}")
         if exit_on_error:
             sys.exit(1)
 
 def build():
-    """Construye la imagen de Docker."""
+    """Builds the Docker image."""
     print(f"{YELLOW}Building Docker image...{NC}")
     run_command(f"docker build -t {REGISTRY}:{IMAGE_TAG} .")
     print(f"{GREEN}Image built successfully{NC}")
 
 def push():
-    """Sube la imagen de Docker al registro."""
+    """Pushes the Docker image to the registry."""
     print(f"{YELLOW}Pushing image to registry...{NC}")
     run_command(f"docker push {REGISTRY}:{IMAGE_TAG}")
     print(f"{GREEN}Image pushed successfully{NC}")
 
 def terraform_init():
-    """Inicializa Terraform."""
+    """Initializes Terraform."""
     print(f"{YELLOW}Initializing Terraform...{NC}")
     run_command("terraform init", cwd="terraform")
     print(f"{GREEN}Terraform initialized{NC}")
 
 def terraform_plan():
-    """Planifica el despliegue de Terraform."""
+    """Plans the Terraform deployment."""
     print(f"{YELLOW}Planning Terraform deployment...{NC}")
     run_command("terraform plan", cwd="terraform")
     print(f"{GREEN}Terraform plan completed{NC}")
 
 def terraform_apply():
-    """Aplica la configuración de Terraform."""
+    """Applies the Terraform configuration."""
     print(f"{YELLOW}Applying Terraform configuration...{NC}")
     run_command("terraform apply -auto-approve", cwd="terraform")
     print(f"{GREEN}Infrastructure deployed{NC}")
 
 def terraform_destroy():
-    """Destruye la infraestructura de Terraform."""
+    """Destroys the Terraform infrastructure."""
     print(f"{YELLOW}Destroying Terraform infrastructure...{NC}")
     run_command("terraform destroy -auto-approve", cwd="terraform")
     print(f"{GREEN}Infrastructure destroyed{NC}")
 
 def kubeconfig():
-    """Actualiza la configuración de kubeconfig."""
+    """Updates the kubeconfig configuration."""
     print(f"{YELLOW}Updating kubeconfig...{NC}")
     run_command(f"aws eks update-kubeconfig --region {AWS_REGION} --name {CLUSTER_NAME}")
     print(f"{GREEN}Kubeconfig updated{NC}")
 
 def setup_cluster():
-    """Configura los componentes del cluster con Ansible."""
+    """Sets up cluster components with Ansible."""
     print(f"{YELLOW}Setting up cluster components...{NC}")
     run_command("ansible-playbook ansible/setup-cluster.yaml --ask-become-pass")
     print(f"{GREEN}Cluster setup completed{NC}")
 
 def deploy_app():
-    """Despliega la aplicación en Kubernetes."""
+    """Deploys the application to Kubernetes."""
     print(f"{YELLOW}Deploying application...{NC}")
     run_command("kubectl apply -f k8s/deployment.yaml")
     run_command("kubectl apply -f k8s/service.yaml")
@@ -83,12 +83,12 @@ def deploy_app():
     print(f"{GREEN}Application deployed{NC}")
 
 def health_check():
-    """Ejecuta el chequeo de salud."""
+    """Executes the health check."""
     print(f"{YELLOW}Performing health check...{NC}")
     run_command("./scripts/health-check.sh")
 
 def deploy():
-    """Despliegue completo (infraestructura + aplicación)."""
+    """Full deployment (infrastructure + application)."""
     terraform_apply()
     kubeconfig()
     setup_cluster()
@@ -97,52 +97,52 @@ def deploy():
     health_check()
 
 def clean():
-    """Limpia todos los recursos."""
+    """Cleans up all resources."""
     print(f"{YELLOW}Cleaning up resources...{NC}")
     run_command("./scripts/cleanup.sh")
     print(f"{GREEN}Cleanup completed{NC}")
 
 def logs():
-    """Muestra los logs de la aplicación."""
+    """Displays the application logs."""
     print(f"{YELLOW}Viewing application logs...{NC}")
-    run_command(f"kubectl logs -f deployment/wisecow-deployment -n {NAMESPACE}")
+    run_command(f"kubectl logs -f deployment/flaskapp-deployment -n {NAMESPACE}")
 
 def scale(replicas):
-    """Escala la aplicación al número de réplicas deseado."""
+    """Scales the application to the desired number of replicas."""
     print(f"{YELLOW}Scaling application to {replicas} replicas...{NC}")
-    run_command(f"kubectl scale deployment wisecow-deployment --replicas={replicas} -n {NAMESPACE}")
+    run_command(f"kubectl scale deployment flaskapp-deployment --replicas={replicas} -n {NAMESPACE}")
     print(f"{GREEN}Application scaled{NC}")
 
 def status():
-    """Muestra el estado de la aplicación."""
+    """Displays the application status."""
     print(f"{YELLOW}Application Status:{NC}")
     run_command(f"kubectl get pods,svc,ingress -n {NAMESPACE}")
 
 def main():
-    parser = argparse.ArgumentParser(description="Wisecow Application Management en Python")
-    subparsers = parser.add_subparsers(dest="command", help="Comandos disponibles")
+    parser = argparse.ArgumentParser(description="Flaskapp Application Management in Python")
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    subparsers.add_parser("build", help="Construye la imagen de Docker")
-    subparsers.add_parser("push", help="Sube la imagen de Docker al registro")
-    subparsers.add_parser("terraform-init", help="Inicializa Terraform")
-    subparsers.add_parser("terraform-plan", help="Planifica el despliegue de Terraform")
-    subparsers.add_parser("terraform-apply", help="Aplica la configuración de Terraform")
-    subparsers.add_parser("terraform-destroy", help="Destruye la infraestructura de Terraform")
-    subparsers.add_parser("kubeconfig", help="Actualiza kubeconfig")
-    subparsers.add_parser("setup-cluster", help="Configura el cluster con Ansible")
-    subparsers.add_parser("deploy-app", help="Despliega la aplicación en k8s")
-    subparsers.add_parser("deploy", help="Despliegue completo (infra + app)")
-    subparsers.add_parser("health-check", help="Chequeo de salud")
-    subparsers.add_parser("clean", help="Limpia todos los recursos")
-    subparsers.add_parser("logs", help="Muestra los logs de la app")
-    subparsers.add_parser("status", help="Muestra el estado de la aplicación")
+    subparsers.add_parser("build", help="Builds the Docker image")
+    subparsers.add_parser("push", help="Pushes the Docker image to the registry")
+    subparsers.add_parser("terraform-init", help="Initializes Terraform")
+    subparsers.add_parser("terraform-plan", help="Plans the Terraform deployment")
+    subparsers.add_parser("terraform-apply", help="Applies the Terraform configuration")
+    subparsers.add_parser("terraform-destroy", help="Destroys the Terraform infrastructure")
+    subparsers.add_parser("kubeconfig", help="Updates kubeconfig")
+    subparsers.add_parser("setup-cluster", help="Sets up the cluster with Ansible")
+    subparsers.add_parser("deploy-app", help="Deploys the application to k8s")
+    subparsers.add_parser("deploy", help="Full deployment (infra + app)")
+    subparsers.add_parser("health-check", help="Health check")
+    subparsers.add_parser("clean", help="Cleans up all resources")
+    subparsers.add_parser("logs", help="Displays the app logs")
+    subparsers.add_parser("status", help="Displays the application status")
     
-    scale_parser = subparsers.add_parser("scale", help="Escala la aplicación")
-    scale_parser.add_argument("replicas", type=int, help="Número de réplicas")
+    scale_parser = subparsers.add_parser("scale", help="Scales the application")
+    scale_parser.add_argument("replicas", type=int, help="Number of replicas")
 
     args = parser.parse_args()
 
-    # Mapear el comando a la función
+    # Map the command to the function
     commands = {
         "build": build,
         "push": push,
